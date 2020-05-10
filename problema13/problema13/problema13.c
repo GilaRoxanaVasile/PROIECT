@@ -1,0 +1,105 @@
+﻿#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+	FILE *fr;
+	fr = fopen("in.txt", "rt");
+
+	if (fr == NULL)
+	{
+		printf("Eroare deschidere fisier in.txt!\n");
+		exit(1);
+	}
+
+	int n, k, j, i, a[20][20], x, nr, l;
+
+	fscanf(fr, "%d", &n);
+	fscanf(fr, "%d", &k);
+
+	fclose(fr);
+
+	nr = n; //salvăm valoarea lui n deoarece o să se piardă de-a lungul umplerii matricii
+	x = 1; //cu ajutorul lui x o sa tinem "urma" numărului care trebuie pus în matrice în ordinea corectă
+	l = 1; //l ajută la completarea matricii 
+
+	for (i = 1; i <= n; i++)
+		for (j = 1; j <= n; j++)
+			a[i][j] = 0;           //inițializăm fiecare element din matrice cu 0 pentru a nu se suprascrie elementele între ele
+
+	/*practic am împărțit matricea în "pătrate care sunt înghițite de alte pătrate"
+	și am completetat cadranele fiecăruia de la cel mai mare la cel mai mic*/
+
+
+	while (n >= nr/2)				//pana cand n e mai mic decat jumatatea lui deoarece matricea se umple cumva simultan simetric
+	{
+		for (i = k; i >= l; i--)		
+		{
+			if (a[i][l] == 0)					
+			{
+				a[i][l]=x;
+				x++;
+			}
+		}
+		for (j = l + 1; j <= n; j++)
+		{
+			if (a[l][j] == 0) 
+			{
+				a[l][j]=x;
+				x++;
+			}
+		}
+		for (i = l + 1; i <= n; i++)
+		{
+			if(a[i][n]==0)
+			{
+				a[i][n] = x;
+				x++;
+			}
+		}
+		for (j = n-1; j >= l ; j--)
+		{
+			if (a[n][j] == 0)
+			{
+				a[n][j] = x;
+				x++;
+			}
+		}
+		for (i = n - 1; i >= k + 1; i--)
+		{
+			if (a[i][l] == 0) 
+			{
+				a[i][l] = x;
+				x++;
+			}
+		} 
+		k++;  //adunăm 1 la k si l , respectiv scădem din n pt a trece la urmatorul pătrat mai mic pe care îl vom completa pe margini 
+		l++;   //completarea se face plecand de la k si inapoi mergand pe laturile patratului in sensul acelor de ceasornic
+		n = n - 1;
+	}
+	
+
+
+	FILE *fw;
+	fw = fopen("out.txt", "wt");
+	if (fw == NULL)
+	{
+		printf("Eroare deschidere fisier out.txt!\n");
+		exit(1);
+	}
+
+	fprintf(fw, "Matricea ceruta este \n");
+
+	for (i = 1; i <= nr; i++)
+	{
+		for (j = 1; j <= nr; j++)
+			fprintf(fw, "%d ", a[i][j]);
+		fprintf(fw, "\n");
+	}
+
+	fclose(fw);
+
+	system("pause");
+	return 0;
+}
